@@ -1,0 +1,1 @@
+print (("Ajeet Prasad"+"\n") * 10)
