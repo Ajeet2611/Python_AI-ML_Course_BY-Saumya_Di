@@ -1,0 +1,2 @@
+Sweet = "kajubarfi"
+game = "cricket" 
