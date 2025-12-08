@@ -1,7 +1,7 @@
 #write a Function named Welcome_massege () That print "welcome to python Programming!"three times.
-def Welcome_massage():
+def welcom_Massage():
     print("welcome to python Programming!")
 
-Welcome_massage ()
-Welcome_massage ()
-Welcome_massage ()
+welcom_Massage ()#function is being called 1
+welcom_Massage ()#function is being called 2
+welcom_Massage ()#function is being called 3
