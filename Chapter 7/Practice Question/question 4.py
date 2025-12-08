@@ -1,0 +1,6 @@
+#Why are functions used in programming? write two advantages.
+# Functions are used to place a specific and repeated block of code at one location, which is given a name. Whenever we need to perform that task, instead of rewriting the entire code, we simply call it by the function's name. ✅ Two Main Advantages of Functions 1. Code Reusability (DRY Principle) Description: The biggest advantage of a function is that you write the code once and can use (call) it multiple times in your program. This eliminates the need to write the same logic repeatedly. Example: If you need to format some data repeatedly, you can create a function for the formatting logic and call it in 10 different places. This saves time and keeps the code concise. Technical term: This is called following the DRY (Don't Repeat Yourself) principle.
+2. Modularity and Organization
+Description: Functions help divide a large program into smaller, manageable, and independent parts. Each function performs a specific task, making the entire program easier to understand and maintain.
+
+# Example: In a game, you can create one function move_player() (to move the player), another calculate_score() (to calculate the score), and a third display_menu() (to show the menu). If you only need to make changes to the scoring, you know you only need to look at the calculate_score() function.
