@@ -1,0 +1,1 @@
+#Write a program that prints the multiplication table of any number entered the user using a for loop.
