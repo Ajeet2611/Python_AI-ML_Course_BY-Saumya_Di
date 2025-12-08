@@ -3,3 +3,4 @@ def fav_food(food):
     print("Ajeet loves ",food)
 
 fav_food("Aalu pratha")
+fav_food("pizza")
