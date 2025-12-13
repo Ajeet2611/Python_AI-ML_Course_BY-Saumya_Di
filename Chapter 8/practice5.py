@@ -1,0 +1,1 @@
+file = open("Ajeet_info.txt","x")

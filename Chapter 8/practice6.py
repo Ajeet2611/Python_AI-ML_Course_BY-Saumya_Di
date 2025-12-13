@@ -1,0 +1,1 @@
+file = open("Ajeet_info.txt","x")#same code hai isliye kyuki question main kaha gya hai ki check karo ki file exist hai ki nahi 
