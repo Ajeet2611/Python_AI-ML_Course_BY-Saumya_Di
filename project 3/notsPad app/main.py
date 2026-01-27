@@ -2,7 +2,6 @@
 # tkinter module and library imports
 
 
-# import tkinter for creating GUI applications
 import tkinter as tk
 from tkinter import filedialog, messagebox
 
@@ -12,16 +11,17 @@ from tkinter import filedialog, messagebox
 
 root = tk.Tk()
 root.title("Ajeet Notepad")
-root.geometry("800x600")
+root.geometry("900x600")
 
 
-# Variable to store current file path
+# Global variables
 
 
 current_file = None
+is_dark_mode = False
 
 
-# Create a Text widget for the notepad area
+# Text widget (Main Notepad Area)
 
 
 text = tk.Text(
@@ -33,19 +33,35 @@ text = tk.Text(
 text.pack(expand=True, fill=tk.BOTH)
 
 
-# MAIN LOGIC START NOW
+# STATUS BAR (Word Count, Char Count)
 
 
-# Function 1 - Create New File
-def new_file():
+status_bar = tk.Label(root, text="Words: 0 | Characters: 0 | Lines: 1", anchor=tk.W)
+status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+def update_status(event=None):
+    content = text.get(1.0, tk.END)
+    words = len(content.split())
+    chars = len(content) - 1
+    lines = content.count("\n")
+    status_bar.config(
+        text=f"Words: {words} | Characters: {chars} | Lines: {lines}"
+    )
+
+text.bind("<KeyRelease>", update_status)
+
+
+# FILE OPERATIONS
+
+
+def new_file(event=None):
     global current_file
     if messagebox.askyesno("New File", "Unsaved changes may be lost. Continue?"):
         text.delete(1.0, tk.END)
         current_file = None
         root.title("Ajeet Notepad - New File")
 
-# Function 2 - Open File
-def open_file():
+def open_file(event=None):
     global current_file
     file_path = filedialog.askopenfilename(
         filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
@@ -56,9 +72,9 @@ def open_file():
             text.insert(tk.END, file.read())
         current_file = file_path
         root.title(f"Ajeet Notepad - {file_path}")
+        update_status()
 
-# Function 3 - Save File (Update)
-def save_file():
+def save_file(event=None):
     global current_file
     if current_file:
         with open(current_file, "w") as file:
@@ -67,7 +83,6 @@ def save_file():
     else:
         save_as_file()
 
-# Function 4 - Save As File
 def save_as_file():
     global current_file
     file_path = filedialog.asksaveasfilename(
@@ -80,7 +95,6 @@ def save_as_file():
         current_file = file_path
         root.title(f"Ajeet Notepad - {file_path}")
 
-# Function 5 - Append File
 def append_file():
     file_path = filedialog.askopenfilename(
         filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
@@ -90,8 +104,11 @@ def append_file():
             file.write(text.get(1.0, tk.END))
         messagebox.showinfo("Append", "Content appended successfully!")
 
-# Function 6 - Find Text
-def find_text():
+
+# FIND TEXT FEATURE
+
+
+def find_text(event=None):
     def find():
         text.tag_remove("found", "1.0", tk.END)
         word = entry.get()
@@ -110,11 +127,38 @@ def find_text():
     win.title("Find Text")
     entry = tk.Entry(win, width=30)
     entry.pack(padx=10, pady=10)
-    tk.Button(win, text="Find", command=find).pack(pady=5)
+    tk.Button(win, text="Find", command=find).pack()
 
-# Function 7 - Dark Mode
-def dark_mode():
-    text.config(bg="#1e1e1e", fg="white", insertbackground="white")
+
+# THEME MODE (LIGHT / DARK)
+
+
+def toggle_theme():
+    global is_dark_mode
+    if is_dark_mode:
+        text.config(bg="white", fg="black", insertbackground="black")
+        is_dark_mode = False
+    else:
+        text.config(bg="#1e1e1e", fg="white", insertbackground="white")
+        is_dark_mode = True
+
+# AUTO SAVE FEATURE
+
+def auto_save():
+    if current_file:
+        with open(current_file, "w") as file:
+            file.write(text.get(1.0, tk.END))
+    root.after(30000, auto_save)  # every 30 seconds
+
+auto_save()
+
+
+# EXIT CONFIRMATION
+
+
+def exit_app(event=None):
+    if messagebox.askyesno("Exit", "Do you want to exit the application?"):
+        root.destroy()
 
 
 # MENU BAR
@@ -123,27 +167,19 @@ def dark_mode():
 menu_bar = tk.Menu(root)
 root.config(menu=menu_bar)
 
-
 # FILE MENU
-
-
 file_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="File", menu=file_menu)
 
-file_menu.add_command(label="New", command=new_file)
-file_menu.add_command(label="Open", command=open_file)
-file_menu.add_command(label="Save", command=save_file)
+file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
+file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
+file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
 file_menu.add_command(label="Save As", command=save_as_file)
 file_menu.add_command(label="Append", command=append_file)
 file_menu.add_separator()
-file_menu.add_command(label="Find", command=find_text)
-file_menu.add_separator()
-file_menu.add_command(label="Exit", command=root.quit)
-
+file_menu.add_command(label="Exit", command=exit_app, accelerator="Ctrl+Q")
 
 # EDIT MENU
-
-
 edit_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
@@ -153,15 +189,24 @@ edit_menu.add_separator()
 edit_menu.add_command(label="Cut", command=lambda: root.focus_get().event_generate("<<Cut>>"))
 edit_menu.add_command(label="Copy", command=lambda: root.focus_get().event_generate("<<Copy>>"))
 edit_menu.add_command(label="Paste", command=lambda: root.focus_get().event_generate("<<Paste>>"))
-
+edit_menu.add_separator()
+edit_menu.add_command(label="Find", command=find_text, accelerator="Ctrl+F")
 
 # VIEW MENU
-
-
 view_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="View", menu=view_menu)
 
-view_menu.add_command(label="Dark Mode", command=dark_mode)
+view_menu.add_command(label=" Dark Mode", command=toggle_theme)
+
+
+# KEYBOARD SHORTCUTS
+
+
+root.bind("<Control-n>", new_file)
+root.bind("<Control-o>", open_file)
+root.bind("<Control-s>", save_file)
+root.bind("<Control-f>", find_text)
+root.bind("<Control-q>", exit_app)
 
 
 # START APPLICATION
